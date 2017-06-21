@@ -26,7 +26,7 @@
 
     - name: Install main packages
       action: apt pkg={{ item }} state=installed update-cache=yes
-      with_items: "{{ system_packages }}"
+      with_items: "{{ main_packages }}"
 
     - name: Config apache
       apache2_module:
