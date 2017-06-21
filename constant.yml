@@ -1,0 +1,26 @@
+source_repo: /home/flask_projects/ormucoFlask
+
+install_root: /var/www/projects/ormucoFlask/
+root_app: /var/www/projects/ormucoFlask/app/
+server_ip: 104.236.237.75
+wsgi_script: /var/www/projects/app.wsgi
+
+project_repo: https://github.com/andrescoulson/ormucoFlask.git
+
+db_user: root
+db_name: ormuco
+db_password: root
+
+update_apt_cache: true
+
+main_packages:
+  - git
+  - apache2
+  - libapache2-mod-wsgi
+  - python-pip
+  - python-virtualenv
+  - python-dev
+  - python-psycopg2
+
+
+

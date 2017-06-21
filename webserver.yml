@@ -2,21 +2,38 @@
   remote_user: root
   sudo: yes
   vars_files:
-    - var.yml
+    - constant.yml
 
 
   tasks:
+    - name: Enable ufw
+      ufw:
+        state: enabled
+        policy: allow
 
-    - name: General | Instalacion de paquetes requeridos
+    - name: Enable SSH
+      ufw:
+        rule: limit
+        port: ssh
+        proto: tcp
+
+    - name: Enable HTTP
+      ufw:
+        rule: allow
+        port: 80
+        proto: tcp
+
+
+    - name: Install main packages
       action: apt pkg={{ item }} state=installed update-cache=yes
       with_items: "{{ system_packages }}"
 
-    - name: Configurando modulo apache
+    - name: Config apache
       apache2_module:
         state: present
         name: wsgi
-#
-    - name: Clonar repositorio
+
+    - name: Clone repo git
       git:
         repo: '{{ project_repo }}'
         dest: '{{ source_repo }}'
@@ -24,20 +41,20 @@
     - name: Creates directory
       file: path=/var/www/projects state=directory
 
-    - name: Mover proyecto a raiz /var/www
+    - name: Move projects to root /var/www
       command: mv -v {{ source_repo }} /var/www/projects
 
-    - name: Instalando requerimientos
+    - name: Install requeriments
       pip:
         requirements: '{{ install_root }}requeriments.txt'
 
-    - name: copiando configuracion apache
+    - name: copy config apache
       template: src=files/flask.conf dest=/etc/apache2/sites-available/flask.conf
 
-    - name: Crear archivo .wsgi en la raiz del proyecto
+    - name: make file .wsgi root project
       template: src=files/app.wsgi dest=/var/www/projects/app.wsgi
 
-    - name: a2ensite en mi aplicacion
+    - name: a2ensite enable project
       command: a2ensite flask
 
     - name: Ensure bash, OpenSSl, and libssl are the latest versions
@@ -84,17 +101,17 @@
                        role_attr_flags=NOSUPERUSER,NOCREATEDB
                        state=present
 
-    - name: reiniciando apache
+    - name: restart apache
       service: name=apache2 state=restarted
 
-    - name: run my script! init
+    - name: run my script db! init
       command: python "{{ root_app }}"/manage.py db init
 
-    - name: run my script! migrate
+    - name: run my script db! migrate
       command: python "{{ root_app }}"/manage.py db migrate
 
-    - name: run my script! upgrade
+    - name: run my script db! upgrade
       command: python "{{ root_app }}"/manage.py db upgrade
 
-    - name: reiniciando apache
+    - name: restart apache
       service: name=apache2 state=restarted
