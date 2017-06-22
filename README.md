@@ -51,8 +51,8 @@ output example
 ```
   6. run ansible-playbook webserver.yml
 ```
- $ sudo apt-get install ansible 
- $ sudo apt-get update 
+ $ cd ansibleFlask
+ $ ansible-playbook webserver.yml 
  
 ```
   7. test deploy
